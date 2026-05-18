@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from decimal import Decimal
 
-from app.database import SessionLocal
 from app.models import Wallet
 
 

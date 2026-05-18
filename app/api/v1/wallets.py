@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
+
+from app.dependency import get_db
 from app.services import wallets as wallets_service
 from app.schemas import CrateWalletRequest
 
@@ -6,11 +9,11 @@ from app.schemas import CrateWalletRequest
 router = APIRouter()
 
 @router.get("/balance")
-def get_balance(wallet_name: str | None = None):
-    return wallets_service.get_balance(wallet_name)
+def get_balance(wallet_name: str | None = None, db: Session = Depends(get_db)):
+    return wallets_service.get_balance(db, wallet_name)
     
 
 @router.post("/wallets")
-def create_wallet(wallet: CrateWalletRequest):
-    return wallets_service.create_wallet(wallet)
+def create_wallet(wallet: CrateWalletRequest, db: Session = Depends(get_db)):
+    return wallets_service.create_wallet(db, wallet)
     
