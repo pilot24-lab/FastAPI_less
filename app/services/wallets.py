@@ -10,7 +10,7 @@ def get_balance(wallet_name: str | None = None):
         #Если имя кошелька не указано, возвращаем сумму балансов всех кошельков
         if wallet_name is None:
             wallets = wallets_repository.get_all_wallets(db)
-            return {"total_balance": sum([w.amount for w in wallets])}
+            return {"total_balance": sum([w.balance for w in wallets])}
         #Если кошелька нет в списке
         if  not wallets_repository.is_wallet_exist(db, wallet_name):
             raise HTTPException(
