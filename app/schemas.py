@@ -42,6 +42,14 @@ class CrateWalletRequest(BaseModel):
 class UserRequest(BaseModel):
     login: str = Field(..., max_length=127)
 
+    @field_validator("login")
+    def login_not_epmty(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Login not empty")
+        return v
+
+
 class UserResponse(UserRequest):
     model_config = {"from_attributes": True} 
     
