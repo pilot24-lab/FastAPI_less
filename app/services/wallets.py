@@ -2,9 +2,10 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.models import User
-from app.schemas import CrateWalletRequest
+from app.schemas import CrateWalletRequest, WalletResponse
 from app.repository import wallets as wallets_repository
 from app.database import SessionLocal
+from app.enum import CurrencyEnum
 
 def get_balance(db: Session, current_user: User, wallet_name: str | None = None):
     #Если имя кошелька не указано, возвращаем сумму балансов всех кошельков
@@ -23,18 +24,13 @@ def get_balance(db: Session, current_user: User, wallet_name: str | None = None)
     
 
 
-def create_wallet(db: Session, current_user: User, wallet: CrateWalletRequest):     
+def create_wallet(db: Session, current_user: User, wallet: CrateWalletRequest) -> WalletResponse:     
     if wallets_repository.is_wallet_exist(db, current_user.id, wallet.name):
         raise HTTPException(
             status_code=400,
             detail=f"Wallet '{wallet.name}' already exists"
         )
     
-    wallet = wallets_repository.create_wallet(db, current_user.id, wallet.name, wallet.initial_balance)
+    wallet = wallets_repository.create_wallet(db, current_user.id, wallet.name, wallet.initial_balance, wallet.currency)
     db.commit()
-    return {
-        "message": f"Wallet '{wallet.name}' created",
-        "wallet": wallet.name,
-        "balance": wallet.balance
-    }
-  
+    return WalletResponse.model_validate(wallet)
